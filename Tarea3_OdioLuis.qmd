@@ -1,5 +1,97 @@
 ---
 title: "Tarea3_OdioLuis"
 format: html
+echo: false
 ---
+
+```{r}
+library(ggplot2)
+library(dplyr) 
+library(ggrepel)
+```
+
+```{r}
+cat(
+  "RESULTADO_1A = 19\n",
+  "RESULTADO_1B = 2025-01-24\n",
+  "RESULTADO_1C = 22\n",
+  "RESULTADO_2A = \n",
+  "RESULTADO_2B = \n",
+  "RESULTADO_2C = \n",
+  "RESULTADO_2D = \n",
+  "RESULTADO_3A = \n",
+  "RESULTADO_3B = \n",
+  "RESULTADO_3C = \n",
+  sep = ""
+)
+```
+
+
+```{r}
+source("cod/funciones_tarea3.R")
+```
+
+```{r}
+parametros <- read.csv("config/parametros_tarea3.csv", sep = ";")
+transacciones.2025 <- read.csv("data/transacciones_2025.csv", sep = ";")
+```
+
+```{r}
+ventana <- parametros |>
+  filter(parametro == "ventana") |>
+  pull(valor) |>
+  as.numeric()
+
+k.alerta <- parametros |>
+  filter(parametro == "k.alerta") |>
+  pull(valor) |>
+  as.numeric()
+
+df.alerta.movil <- alerta.movil(transacciones.2025, ventana, k.alerta)
+
+(n.dias.alerta = sum(df.alerta.movil$alerta, na.rm = TRUE))
+(fecha.primer.alerta <- df.alerta.movil |> 
+  filter(alerta == TRUE) |> 
+  pull(fecha) |> 
+  min())
+
+df.alerta.movil.2 <- alerta.movil(transacciones.2025, 7, 2)
+(n.dias.alerta.2 <- sum(df.alerta.movil.2$alerta, na.rm = TRUE))
+```
+
+```{r}
+
+df.grafico <- df.alerta.movil |> 
+  mutate(dia = row_number())
+
+grafico.alertas <- ggplot(df.grafico, aes(x = dia, y = n.tx)) +
+  # Línea general
+  geom_line(color = "darkgray", linewidth = 0.8) +
+  
+  # Puntos rojos para las alertas
+  geom_point(data = filter(df.grafico, alerta == TRUE), 
+             color = "red", size = 2.5) +
+  
+  # NUEVO: Usar geom_text_repel en lugar de geom_text
+  geom_text_repel(data = filter(df.grafico, alerta == TRUE), 
+                  aes(label = fecha), 
+                  size = 3,
+                  box.padding = 0.6,       # Espacio extra alrededor del texto
+                  point.padding = 0.5,     # Espacio extra alrededor del punto rojo
+                  segment.color = "gray",  # Dibuja una línea gris pequeña si el texto se aleja mucho
+                  min.segment.length = 0,  # Asegura que la línea siempre se dibuje
+                  direction = "y") +       # Prioriza mover los textos hacia arriba o abajo
+  
+  labs(
+    title = "Serie Diaria de Transacciones",
+    subtitle = "Días con alerta por ventana móvil resaltados en rojo",
+    x = "Día del año (1 a 365)",
+    y = "Número de Transacciones"
+  ) +
+  theme_minimal()
+
+
+ggsave("info/figuras/grafico.alertas.ej1.png", plot = grafico.alertas, 
+       width = 11, height =11, dpi = 300)
+```
 
