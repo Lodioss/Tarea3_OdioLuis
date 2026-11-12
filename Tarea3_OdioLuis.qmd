@@ -1,5 +1,54 @@
 ---
 title: "Tarea3_OdioLuis"
 format: html
+echo: false
 ---
+```{r}
+cat(
+  "RESULTADO_1A = 19\n",
+  "RESULTADO_1B = 2025-01-24\n",
+  "RESULTADO_1C = 22\n",
+  "RESULTADO_2A = \n",
+  "RESULTADO_2B = \n",
+  "RESULTADO_2C = \n",
+  "RESULTADO_2D = \n",
+  "RESULTADO_3A = \n",
+  "RESULTADO_3B = \n",
+  "RESULTADO_3C = \n",
+  sep = ""
+)
+```
+
+
+```{r}
+source("cod/funciones_tarea3.R")
+```
+
+```{r}
+parametros <- read.csv("config/parametros_tarea3.csv", sep = ";")
+transacciones.2025 <- read.csv("data/transacciones_2025.csv", sep = ";")
+```
+
+```{r}
+ventana <- parametros |>
+  filter(parametro == "ventana") |>
+  pull(valor) |>
+  as.numeric()
+
+k.alerta <- parametros |>
+  filter(parametro == "k.alerta") |>
+  pull(valor) |>
+  as.numeric()
+
+df.alerta.movil <- alerta.movil(transacciones.2025, ventana, k.alerta)
+
+(n.dias.alerta = sum(df.alerta.movil$alerta, na.rm = TRUE))
+(fecha.primer.alerta <- df.alerta.movil |> 
+  filter(alerta == TRUE) |> 
+  pull(fecha) |> 
+  min())
+
+df.alerta.movil.2 <- alerta.movil(transacciones.2025, 7, 2)
+(n.dias.alerta.2 <- sum(df.alerta.movil.2$alerta, na.rm = TRUE))
+```
 
