@@ -1,5 +1,6 @@
 library(dplyr)
-
+# la funcion recibe en df: dataframe, ventana: numeric, k.alerta: numeric
+# retorna un data frame con columnas: fecha, n.tx, media, desv, alerta
 alerta.movil <- function(df, ventana, k.alerta){
   
   df.final <- df |> 
