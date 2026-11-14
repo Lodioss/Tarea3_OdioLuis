@@ -15,10 +15,10 @@ cat(
   "RESULTADO_1A = 19\n",
   "RESULTADO_1B = 2025-01-24\n",
   "RESULTADO_1C = 22\n",
-  "RESULTADO_2A = \n",
-  "RESULTADO_2B = \n",
-  "RESULTADO_2C = \n",
-  "RESULTADO_2D = \n",
+  "RESULTADO_2A = 0.0027\n",
+  "RESULTADO_2B = Aserri\n",
+  "RESULTADO_2C = 1 \n",
+  "RESULTADO_2D = Esparza\n",
   "RESULTADO_3A = \n",
   "RESULTADO_3B = \n",
   "RESULTADO_3C = \n",
@@ -34,6 +34,8 @@ source("cod/funciones_tarea3.R")
 ```{r}
 parametros <- read.csv("config/parametros_tarea3.csv", sep = ";")
 transacciones.2025 <- read.csv("data/transacciones_2025.csv", sep = ";")
+cantones <- read.csv("data/cantones.csv", sep = ",")
+
 ```
 
 ```{r}
@@ -89,9 +91,41 @@ grafico.alertas <- ggplot(df.grafico, aes(x = dia, y = n.tx)) +
     y = "Número de Transacciones"
   ) +
   theme_minimal()
+```
 
 
-ggsave("info/figuras/grafico.alertas.ej1.png", plot = grafico.alertas, 
-       width = 11, height =11, dpi = 300)
+```{r}
+canal.benford <- parametros |>
+  filter(parametro == "canal.benford") |> 
+  pull(valor)
+
+vector.montos <- transacciones.2025 |> 
+  filter(canal == canal.benford) |> 
+  pull(monto_crc)
+
+(res.2a <- round(benford.mad(vector.montos), 4))
+
+df.benford.canton <- benford.canton(transacciones.2025,  canal.benford, cantones)
+
+df.benford.canton |>
+  slice(1) |> 
+  pull(canton)
+
+df.benford.canton |> 
+  filter(clase == "no conformidad") |> 
+  nrow()
+
+df.benford.Web <- benford.canton(transacciones.2025, "Web", cantones)
+
+df.benford.Web |> 
+  slice(1) |> 
+  pull(canton)
+
+```
+
+
+
+```{r}
+
 ```
 
