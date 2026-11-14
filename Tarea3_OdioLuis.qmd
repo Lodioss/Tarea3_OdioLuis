@@ -165,6 +165,7 @@ grafico.ej2 <- ggplot(df.graf, aes(x = digito)) +
   theme_minimal(base_size = 12) +
   theme(legend.position = "top", panel.grid.minor = element_blank())
 
+#conclusion del grafico: no es fraude, es un efecto del tamanio de la muestra que al ser pequenia desvia las proporciones observadas
 
 ```
 
