@@ -191,3 +191,37 @@ res.comun <- valor.acumulado(transacciones.2025, 0.06,  "App")
 (res.3c <- round(res.comun$va, 2))
 ```
 
+
+```{r}
+res.interes$tabla |>
+  mutate(acumulado = monto * factor) |>
+  pivot_longer(
+    cols = c(monto, acumulado),
+    names_to = "tipo",
+    values_to = "valor"
+  ) |>
+  mutate(
+    tipo = factor(
+      tipo,
+      levels = c("monto", "acumulado"),
+      labels = c("Monto mensual (S.m)", "Valor acumulado al 31-dic")
+    )
+  ) |>
+  ggplot(aes(x = factor(mes), y = valor, fill = tipo)) +
+  geom_col(position = position_dodge(width = 0.75), width = 0.7) +
+  coord_cartesian(ylim = c(1.4e9, NA)) +
+  scale_y_continuous(labels = label_number(prefix = "₡", scale_cut = cut_short_scale())) +
+  scale_fill_manual(
+    name = NULL,
+    values = c("Monto mensual (S.m)" = "#6baed6", "Valor acumulado al 31-dic" = "#08519c")
+  ) +
+  labs(
+    title = paste("Monto mensual vs. Valor acumulado al 31-dic - Canal", canal.interes),
+    subtitle = paste0("Tasa efectiva anual: ", percent(tasa.anual, accuracy = 0.01),
+                      " | VA total = ₡", format(round(res.interes$va, 2), big.mark = ",")),
+    x = "Mes",
+    y = "Monto (CRC)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top", panel.grid.minor = element_blank())
+```
