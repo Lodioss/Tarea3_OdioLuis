@@ -193,7 +193,7 @@ res.comun <- valor.acumulado(transacciones.2025, 0.06,  "App")
 
 
 ```{r}
-res.interes$tabla |>
+ res.interes$tabla |>
   mutate(acumulado = monto * factor) |>
   pivot_longer(
     cols = c(monto, acumulado),
@@ -223,5 +223,9 @@ res.interes$tabla |>
     y = "Monto (CRC)"
   ) +
   theme_minimal(base_size = 12) +
-  theme(legend.position = "top", panel.grid.minor = element_blank())
+  theme(legend.position = "top", panel.grid.minor = element_blank())  
+  
+  
+
+
 ```
