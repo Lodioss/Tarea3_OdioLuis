@@ -15,10 +15,10 @@ cat(
   "RESULTADO_1A = 19\n",
   "RESULTADO_1B = 2025-01-24\n",
   "RESULTADO_1C = 22\n",
-  "RESULTADO_2A = \n",
-  "RESULTADO_2B = \n",
-  "RESULTADO_2C = \n",
-  "RESULTADO_2D = \n",
+  "RESULTADO_2A = 0.0027\n",
+  "RESULTADO_2B = Aserri\n",
+  "RESULTADO_2C = 1 \n",
+  "RESULTADO_2D = Esparza\n",
   "RESULTADO_3A = \n",
   "RESULTADO_3B = \n",
   "RESULTADO_3C = \n",
@@ -34,6 +34,8 @@ source("cod/funciones_tarea3.R")
 ```{r}
 parametros <- read.csv("config/parametros_tarea3.csv", sep = ";")
 transacciones.2025 <- read.csv("data/transacciones_2025.csv", sep = ";")
+cantones <- read.csv("data/cantones.csv", sep = ",")
+
 ```
 
 ```{r}
@@ -89,9 +91,81 @@ grafico.alertas <- ggplot(df.grafico, aes(x = dia, y = n.tx)) +
     y = "Número de Transacciones"
   ) +
   theme_minimal()
+```
 
 
-ggsave("info/figuras/grafico.alertas.ej1.png", plot = grafico.alertas, 
-       width = 11, height =11, dpi = 300)
+```{r}
+canal.benford <- parametros |>
+  filter(parametro == "canal.benford") |> 
+  pull(valor)
+
+vector.montos <- transacciones.2025 |> 
+  filter(canal == canal.benford) |> 
+  pull(monto_crc)
+
+(res.2a <- round(benford.mad(vector.montos), 4))
+
+df.benford.canton <- benford.canton(transacciones.2025,  canal.benford, cantones)
+
+df.benford.canton |>
+  slice(1) |> 
+  pull(canton)
+
+df.benford.canton |> 
+  filter(clase == "no conformidad") |> 
+  nrow()
+
+df.benford.Web <- benford.canton(transacciones.2025, "Web", cantones)
+
+df.benford.Web |> 
+  slice(1) |> 
+  pull(canton)
+
+```
+
+
+
+```{r}
+x <- transacciones.2025$monto_crc[transacciones.2025$canal == canal.benford]
+
+d       <- floor(x / (10^floor(log10(x))))
+conteos <- table(factor(d, levels = 1:9))
+p.d     <- as.numeric(conteos) / length(x)
+B.d     <- log10(1 + (1 / (1:9)))
+mad     <- mean(abs(p.d - B.d))
+
+
+df.graf <- data.frame(
+  digito = factor(1:9),
+  p.d    = p.d,
+  B.d    = B.d
+)
+
+
+grafico.ej2 <- ggplot(df.graf, aes(x = digito)) +
+  geom_col(aes(y = p.d, fill = "Observado (p.d)"), width = 0.65, alpha = 0.85) +
+  geom_line(aes(y = B.d, group = 1, color = "Benford (B.d)"), linewidth = 1.1) +
+  geom_point(aes(y = B.d, color = "Benford (B.d)"), size = 3) +
+  geom_text(
+    aes(y = p.d, label = scales::percent(p.d, accuracy = 0.1)),
+    vjust = -0.5, size = 3.3
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.12))
+  ) +
+  scale_fill_manual(name = NULL, values = c("Observado (p.d)" = "#2b5c8f")) +
+  scale_color_manual(name = NULL, values = c("Benford (B.d)" = "#d95f02")) +
+  labs(
+    title = paste("Ley de Benford - Canal", canal.benford),
+    subtitle = paste("MAD global =", round(mad, 4)),
+    x = "Primer dígito (d)",
+    y = "Proporción"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top", panel.grid.minor = element_blank())
+
+#conclusion del grafico: no es fraude, es un efecto del tamanio de la muestra que al ser pequenia desvia las proporciones observadas
+
 ```
 
