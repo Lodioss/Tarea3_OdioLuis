@@ -42,7 +42,7 @@ transacciones.2025 <- read.csv("data/transacciones_2025.csv", sep = ";")
 cantones <- read.csv("data/cantones.csv", sep = ",")
 
 ```
-
+## Ejercicio 1
 ```{r}
 ventana <- parametros |>
   filter(parametro == "ventana") |>
@@ -65,13 +65,13 @@ df.alerta.movil <- alerta.movil(transacciones.2025, ventana, k.alerta)
 df.alerta.movil.2 <- alerta.movil(transacciones.2025, 7, 2)
 (n.dias.alerta.2 <- sum(df.alerta.movil.2$alerta, na.rm = TRUE))
 ```
-
+## Grafico ejercicio 1
 ```{r}
 
 df.grafico <- df.alerta.movil |> 
   mutate(dia = row_number())
 
-grafico.alertas <- ggplot(df.grafico, aes(x = dia, y = n.tx)) +
+ggplot(df.grafico, aes(x = dia, y = n.tx)) +
   # Línea general
   geom_line(color = "darkgray", linewidth = 0.8) +
   
@@ -96,8 +96,9 @@ grafico.alertas <- ggplot(df.grafico, aes(x = dia, y = n.tx)) +
     y = "Número de Transacciones"
   ) +
   theme_minimal()
+#grafico generado por Gemini (Google, 2026)
 ```
-
+## Ejercicio 2
 ```{r}
 canal.benford <- parametros |>
   filter(parametro == "canal.benford") |> 
@@ -126,7 +127,7 @@ df.benford.Web |>
   pull(canton)
 
 ```
-
+# Grafico ejercicio 2
 ```{r}
 x <- transacciones.2025$monto_crc[transacciones.2025$canal == canal.benford]
 
@@ -144,7 +145,7 @@ df.graf <- data.frame(
 )
 
 
-grafico.ej2 <- ggplot(df.graf, aes(x = digito)) +
+ggplot(df.graf, aes(x = digito)) +
   geom_col(aes(y = p.d, fill = "Observado (p.d)"), width = 0.65, alpha = 0.85) +
   geom_line(aes(y = B.d, group = 1, color = "Benford (B.d)"), linewidth = 1.1) +
   geom_point(aes(y = B.d, color = "Benford (B.d)"), size = 3) +
@@ -166,11 +167,12 @@ grafico.ej2 <- ggplot(df.graf, aes(x = digito)) +
   ) +
   theme_minimal(base_size = 12) +
   theme(legend.position = "top", panel.grid.minor = element_blank())
-
+#grafico generado por Gemini (Google, 2026)
 #conclusion del grafico: no es fraude, es un efecto del tamanio de la muestra que al ser pequenia desvia las proporciones observadas
 
 ```
-
+#### conclusion del grafico: no es fraude, es un efecto del tamanio de la muestra que al ser pequenia desvia las proporciones observadas
+## Ejercicio 3
 ```{r}
 canal.interes <- parametros |>
   filter(parametro == "canal.interes") |> 
@@ -191,9 +193,9 @@ res.comun <- valor.acumulado(transacciones.2025, 0.06,  "App")
 (res.3c <- round(res.comun$va, 2))
 ```
 
-
+## Grafico Ejercicio 3
 ```{r}
- res.interes$tabla |>
+  res.interes$tabla |>
   mutate(acumulado = monto * factor) |>
   pivot_longer(
     cols = c(monto, acumulado),
@@ -225,7 +227,5 @@ res.comun <- valor.acumulado(transacciones.2025, 0.06,  "App")
   theme_minimal(base_size = 12) +
   theme(legend.position = "top", panel.grid.minor = element_blank())  
   
-  
-
-
+  #grafico generado por Gemini (Google, 2026)
 ```
