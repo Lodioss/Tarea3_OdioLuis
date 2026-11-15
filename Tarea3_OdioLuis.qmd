@@ -42,7 +42,9 @@ transacciones.2025 <- read.csv("data/transacciones_2025.csv", sep = ";")
 cantones <- read.csv("data/cantones.csv", sep = ",")
 
 ```
+
 ## Ejercicio 1
+
 ```{r}
 ventana <- parametros |>
   filter(parametro == "ventana") |>
@@ -65,7 +67,9 @@ df.alerta.movil <- alerta.movil(transacciones.2025, ventana, k.alerta)
 df.alerta.movil.2 <- alerta.movil(transacciones.2025, 7, 2)
 (n.dias.alerta.2 <- sum(df.alerta.movil.2$alerta, na.rm = TRUE))
 ```
+
 ## Grafico ejercicio 1
+
 ```{r}
 
 df.grafico <- df.alerta.movil |> 
@@ -98,7 +102,9 @@ ggplot(df.grafico, aes(x = dia, y = n.tx)) +
   theme_minimal()
 #grafico generado por Gemini (Google, 2026)
 ```
+
 ## Ejercicio 2
+
 ```{r}
 canal.benford <- parametros |>
   filter(parametro == "canal.benford") |> 
@@ -127,7 +133,9 @@ df.benford.Web |>
   pull(canton)
 
 ```
+
 # Grafico ejercicio 2
+
 ```{r}
 x <- transacciones.2025$monto_crc[transacciones.2025$canal == canal.benford]
 
@@ -171,8 +179,11 @@ ggplot(df.graf, aes(x = digito)) +
 #conclusion del grafico: no es fraude, es un efecto del tamanio de la muestra que al ser pequenia desvia las proporciones observadas
 
 ```
+
 #### conclusion del grafico: no es fraude, es un efecto del tamanio de la muestra que al ser pequenia desvia las proporciones observadas
+
 ## Ejercicio 3
+
 ```{r}
 canal.interes <- parametros |>
   filter(parametro == "canal.interes") |> 
@@ -194,6 +205,7 @@ res.comun <- valor.acumulado(transacciones.2025, 0.06,  "App")
 ```
 
 ## Grafico Ejercicio 3
+
 ```{r}
   res.interes$tabla |>
   mutate(acumulado = monto * factor) |>
