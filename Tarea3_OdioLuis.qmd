@@ -1,12 +1,16 @@
 ---
 title: "Tarea3_OdioLuis"
 format: html
-echo: false
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
 
 ```{r}
 library(ggplot2)
 library(dplyr) 
+library(scales)
 library(ggrepel)
 ```
 
@@ -19,15 +23,16 @@ cat(
   "RESULTADO_2B = Aserri\n",
   "RESULTADO_2C = 1 \n",
   "RESULTADO_2D = Esparza\n",
-  "RESULTADO_3A = \n",
-  "RESULTADO_3B = \n",
-  "RESULTADO_3C = \n",
+  "RESULTADO_3A =  22634222711.14\n",
+  "RESULTADO_3B = 697694311.14\n",
+  "RESULTADO_3C = 22535558203.14\n",
   sep = ""
 )
 ```
 
-
 ```{r}
+# options es para poder tener 2 decimales en numeros grandes en el ej3
+options(scipen = 999, digits = 15)
 source("cod/funciones_tarea3.R")
 ```
 
@@ -93,7 +98,6 @@ grafico.alertas <- ggplot(df.grafico, aes(x = dia, y = n.tx)) +
   theme_minimal()
 ```
 
-
 ```{r}
 canal.benford <- parametros |>
   filter(parametro == "canal.benford") |> 
@@ -122,8 +126,6 @@ df.benford.Web |>
   pull(canton)
 
 ```
-
-
 
 ```{r}
 x <- transacciones.2025$monto_crc[transacciones.2025$canal == canal.benford]
@@ -167,5 +169,25 @@ grafico.ej2 <- ggplot(df.graf, aes(x = digito)) +
 
 #conclusion del grafico: no es fraude, es un efecto del tamanio de la muestra que al ser pequenia desvia las proporciones observadas
 
+```
+
+```{r}
+canal.interes <- parametros |>
+  filter(parametro == "canal.interes") |> 
+  pull(valor)
+
+tasa.anual <- parametros |>
+  filter(parametro == "tasa.anual") |> 
+  pull(valor) |> 
+  as.numeric()
+
+
+res.interes <- valor.acumulado(transacciones.2025, tasa.anual, canal.interes)
+
+(res.3a <-  round(res.interes$va,2))
+(res.3b <- round(res.interes$interes,2))
+
+res.comun <- valor.acumulado(transacciones.2025, 0.06,  "App")
+(res.3c <- round(res.comun$va, 2))
 ```
 
