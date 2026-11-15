@@ -1,4 +1,5 @@
 library(dplyr)
+library(tidyr)
 # la funcion recibe en df: dataframe, ventana: numeric, k.alerta: numeric
 # retorna un data frame con columnas: fecha, n.tx, media, desv, alerta
 alerta.movil <- function(df, ventana, k.alerta){
@@ -73,7 +74,39 @@ benford.canton <- function(df, canal, cantones) {
   
   return(df.res)
 }
+
+# recibe un data frame, una tasa anual y un canal y retorna un lista con una tabla que contiene columnas de mes. monto, facto. ademas 
+# la lista tambien tiene tasa mensual, el valor acumulado y el interes
   
+valor.acumulado <- function(df, tasa.anual, canal){
+  canal.va <- canal
+  tasa.mensual <- (1 + tasa.anual)^(1/12)-1
+  
+  df.res <- df |> 
+    filter(canal == canal.va) |> 
+    mutate(
+      mes = as.integer(format(as.Date(fecha), "%m")) 
+    ) |> 
+    group_by(mes) |> 
+    summarise(
+      monto = sum(monto_crc), .groups = "drop"
+    ) |> complete(mes = 1:12, fill = list(monto = 0)) |> 
+    arrange(mes) |> 
+    mutate(
+      factor = (1+ tasa.mensual)^(12-mes),
+      valor.acum = monto * factor
+    ) 
+  
+    va <- sum(df.res$valor.acum)
+    interes <- va - sum(df.res$monto)
+    
+    return(list(
+      tabla = df.res |> select(mes, monto, factor),
+      tasa.mensual = tasa.mensual,
+      va = va,
+      interes = interes
+    ))
+}
 
 
 
